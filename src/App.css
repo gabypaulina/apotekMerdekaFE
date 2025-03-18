@@ -1,0 +1,179 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.Hind {
+  font-family: 'Hind Siliguri', cursive;
+}
+
+.Raleway {
+  font-family: 'Raleway', cursive;
+}
+
+.Rimouski {
+  font-family: 'Rimouski Semibold', cursive;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.navbar {
+  background-color: #bb0f0f;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: end;
+}
+
+.nav-link {
+  margin-right: 2rem;
+}
+
+.navbar img {
+  height: 30px;
+  cursor: pointer;
+}
+
+.content {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(./assets/apotekMerdeka.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  flex: 1;
+  padding: 20px;
+  position: relative;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+}
+
+.title h1 {
+  font-size: 70px;
+  color: #bb0f0f;
+  font-family: "Arial Black", "Arial Bold", Arial, sans-serif;
+  margin-bottom: 0;
+}
+
+.logo {
+  margin-top: 5px;
+  justify-items: center;
+  margin-bottom: 50px;
+}
+
+.logo img {
+  height: 180px;
+  margin-bottom: 0;
+}
+
+.buttons {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  display: flex;
+  gap: 50px;
+}
+
+.buttons button {
+  background-color: white;
+  color: #bb0f0f;
+  border: 2px solid #bb0f0f;
+  height: 155px;
+  width: 180px;
+  padding: 20px 20px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+button img {
+  height: 65px;
+  margin-bottom: 20px;
+}
+
+button p {
+  font-size: 22px;
+}
+
+.titleProduct p {
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.titleProduct button, .search, .edit, .kelola, .addPabrik, .addRacikan, .addPaketan, .save {
+  width: 220px;
+  height: 2.5rem;
+  background-color: #ffab6b;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.addProductRacikan {
+  width: 200px;
+  height: 200px;
+  background-color: white;
+  border: dashed;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.searchEnginee img {
+  background-color: #ffab6b;
+  width: 40px;
+  height: 40px;
+  padding: 11px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.add {
+  width: 50px;
+  background-color: #ffab6b;
+  border: none;
+  border-radius: 5px;
+}
+
+.done {
+  width: 100%;
+  height: 40px;
+  background-color: #ffab6b;
+  border: none;
+  border-radius: 5px;
+  margin-top: 250px;
+}
+
+.cart {
+  border: black 1px solid;
+  min-height: 50vh; /* Tinggi minimal 70% dari viewport height */
+  max-height: 70vh; /* Tinggi maksimum 90% dari viewport height */
+  overflow-y: auto; /* Tambahkan scroll jika konten melebihi tinggi maksimum */
+}
+
+
+.cart-header{
+  font-weight: bold; /* Tebalkan teks header */
+
+}
+
+
+.cart-item:hover {
+  background-color: #f1f1f1; /* Warna latar belakang saat dihover */
+}
+
+.notifications {
+  margin-bottom: 20px;
+}
+
+.notification {
+  padding: 10px;
+  background-color: #ffcccb;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  color: #d9534f;
+  font-weight: bold;
+}
