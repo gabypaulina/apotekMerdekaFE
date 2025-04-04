@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom'
-
 import axios from "axios";
 import { Container, Form, Row, Col, ListGroup, Modal, Button } from "react-bootstrap"
 
@@ -22,46 +21,41 @@ const EditRacikan = () => {
   }, [id])
 
   const fetchProdukList = async () => {
-    try{
-      const response = await axios.get("http://localhost:3000/api/products");
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
       setProdukList(response.data)
-    }catch(err) {
+    } catch (err) {
       console.error("Gagal mengambil daftar produk", err)
     }
   }
 
   const fetchRacikanEdit = async () => {
-    try{
-      const response = await axios.get(`http://localhost:3000/api/racikans/${id}`)
-      const racikan = response.data
-      console.log("Data Racikan dari backend: ", racikan)
-
-      if(racikan.produkRacikan && racikan.produkRacikan.every(item => typeof item === 'string')) {
-        setProdukRacikan(racikan.produkRacikan)
-      }
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/racikans/${id}`);
+      const racikan = response.data;
+      console.log("Data Racikan dari backend: ", racikan);
 
       const productDetails = await Promise.all(
         racikan.produkRacikan.map(async (id) => {
-          const response = await axios.get(`http://localhost:3000/api/products/${id}`)
-          return response.data
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
+          return response.data;
         })
-      )
+      );
 
-      setProdukRacikan(productDetails)
-      setKodeRacikan(racikan.kodeRacikan)
-      setNamaRacikan(racikan.namaRacikan)
-      setHpp(racikan.hpp)
-      setHargaJual(racikan.hargaJual)
-    }catch(err) {
-      console.error("Failed to fetch racikan: ", err)
+      setProdukRacikan(productDetails);
+      setKodeRacikan(racikan.kodeRacikan);
+      setNamaRacikan(racikan.namaRacikan);
+      setHpp(racikan.hpp);
+      setHargaJual(racikan.hargaJual);
+    } catch (err) {
+      console.error("Failed to fetch racikan: ", err);
     }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    try{
-      const response = await axios.put(`http://localhost:3000/api/racikans/${id}`, {
+    try {
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/racikans/${id}`, {
         produkRacikan,
         kodeRacikan,
         namaRacikan,
@@ -69,109 +63,59 @@ const EditRacikan = () => {
         hargaJual,
       });
 
-      if(response.status == 200) {
-        alert("Racikan update successfully")
-        navigate('/produk')
-      }      
-    }catch(err) {
-      console.error("Failed to update racikan: ", err);
-      if(err.response){
-        alert(`Error: ${err.response.data.message}`)
-      }else{
-        alert("Failed to update racikan")
+      if (response.status === 200) {
+        alert("Racikan updated successfully");
+        navigate('/produk');
       }
+    } catch (err) {
+      console.error("Failed to update racikan: ", err);
+      alert(err.response?.data?.message || "Failed to update racikan");
     }
   };
 
   const handlePilihProduk = (produk) => {
-    setProdukRacikan((prev) => [...prev, produk])
-    setShowModal(false)
+    setProdukRacikan((prev) => [...prev, produk]);
+    setShowModal(false);
   }
 
   const handleHapusProduk = (id) => {
-    setProdukRacikan((prev) => prev.filter((produk) => produk._id !== id))
+    setProdukRacikan((prev) => prev.filter((produk) => produk._id !== id));
   }
 
-
   return (
-    <>
     <Container className="mt-4 Raleway">
-        <div className="titleProduct">
-          <p>EDIT RACIKAN</p>
-        </div>
-        <div className="group-add text-center mt-5 mb-5">
-          <button className="addProductRacikan" onClick={() => setShowModal(true)}>
-            + <br />
-            ADD PRODUCT
-          </button>
-        </div>
-
-        {produkRacikan.length > 0 && (
-          <div className="mb-4">
-            <h5>Produk Yang Dipilih :</h5>
-            <ListGroup>
-              {produkRacikan.map((produk) => (
-                <ListGroup.Item key={produk._id}>
-                  {produk.namaProduk} - {produk.kodeProduk}
-                  <Button variant='danger' size="sm" className="ms-2" onClick={() => handleHapusProduk(produk._id)}>Hapus</Button>
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-          </div>
-        )}
-
-        <Form onSubmit={handleSubmit}>
-          <Row>
-            <Col xs={6}>
-              <Form.Group controlId="formName" className="mb-3">
-                <Form.Label>Kode Racikan</Form.Label>
-                <Form.Control
-                  type="name"
-                  placeholder=""
-                  value={kodeRacikan}
-                  onChange={(e) => setKodeRacikan(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group controlId="formName" className="mb-3">
-                <Form.Label>Nama Racikan</Form.Label>
-                <Form.Control
-                  type="name"
-                  placeholder=""
-                  value={namaRacikan}
-                  onChange={(e) => setNamaRacikan(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-
-          <Form.Group controlId="formHargaJual" className="mb-3">
-            <Form.Label>Harga Pokok Rp</Form.Label>
-            <Form.Control
-              type="name"
-              placeholder="Contoh : Rp 5.000"
-              value={hpp}
-              onChange={(e) => setHpp(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formHargaJual" className="mb-3">
-            <Form.Label>Harga Jual Rp</Form.Label>
-            <Form.Control
-              type="name"
-              placeholder="Contoh : Rp 5.000"
-              value={hargaJual}
-              onChange={(e) => setHargaJual(e.target.value)}
-            />
-          </Form.Group>
-
-          {error && <p className="text-danger">{error}</p>}
-        
-          <button className="save mt-4 mb-4" type="submit" style={{width: '100%'}}>SIMPAN</button>
-        </Form>
-      </Container>
-
+      <div className="titleProduct">
+        <p>EDIT RACIKAN</p>
+      </div>
+      <button className="addProductRacikan mt-5 mb-5" onClick={() => setShowModal(true)}>
+        + <br /> ADD PRODUCT
+      </button>
+      <Form onSubmit={handleSubmit}>
+        <Row>
+          <Col xs={6}>
+            <Form.Group controlId="formKodeRacikan" className="mb-3">
+              <Form.Label>Kode Racikan</Form.Label>
+              <Form.Control type="text" value={kodeRacikan} onChange={(e) => setKodeRacikan(e.target.value)} />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="formNamaRacikan" className="mb-3">
+              <Form.Label>Nama Racikan</Form.Label>
+              <Form.Control type="text" value={namaRacikan} onChange={(e) => setNamaRacikan(e.target.value)} />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Form.Group controlId="formHPP" className="mb-3">
+          <Form.Label>Harga Pokok Rp</Form.Label>
+          <Form.Control type="text" value={hpp} onChange={(e) => setHpp(e.target.value)} />
+        </Form.Group>
+        <Form.Group controlId="formHargaJual" className="mb-3">
+          <Form.Label>Harga Jual Rp</Form.Label>
+          <Form.Control type="text" value={hargaJual} onChange={(e) => setHargaJual(e.target.value)} />
+        </Form.Group>
+        {error && <p className="text-danger">{error}</p>}
+        <button className="save mt-4 mb-4" type="submit" style={{ width: '100%' }}>SIMPAN</button>
+      </Form>
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Pilih Produk</Modal.Title>
@@ -179,7 +123,7 @@ const EditRacikan = () => {
         <Modal.Body>
           <ListGroup>
             {produkList.map((produk) => (
-              <ListGroup.Item key={produk._id} action onClick={()=>handlePilihProduk(produk)}>
+              <ListGroup.Item key={produk._id} action onClick={() => handlePilihProduk(produk)}>
                 {produk.namaProduk} - {produk.kodeProduk}
               </ListGroup.Item>
             ))}
@@ -189,8 +133,8 @@ const EditRacikan = () => {
           <Button variant="secondary" onClick={() => setShowModal(false)}>Tutup</Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </Container>
   )
 }
 
-export default EditRacikan
+export default EditRacikan;

@@ -4,23 +4,22 @@ import { Container, Card, Table, Form, Row, Col, Button } from "react-bootstrap"
 
 const Penjualan = () => {
   const [transactions, setTransactions] = useState([]);
-  const [topSales, setTopSales] = useState([]); // State untuk TOP SALE
-  const [shift, setShift] = useState(""); // State untuk shift
-  const [startDate, setStartDate] = useState(""); // State untuk tanggal mulai
-  const [endDate, setEndDate] = useState(""); // State untuk tanggal akhir
+  const [topSales, setTopSales] = useState([]);
+  const [shift, setShift] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  // Fungsi untuk mengambil data transaksi dari backend
   const fetchTransactions = async () => {
     try {
       const params = {};
-      if (shift) params.shift = shift; // Tambahkan shift ke params jika ada
+      if (shift) params.shift = shift;
       if (startDate && endDate) {
-        params.startDate = new Date(startDate).toISOString(); // Konversi ke format ISO
-        params.endDate = new Date(endDate).toISOString();     // Konversi ke format ISO
+        params.startDate = new Date(startDate).toISOString();
+        params.endDate = new Date(endDate).toISOString();
       }
 
-      const response = await axios.get("http://localhost:3000/api/transactions", {
-        params, // Kirim query parameter ke backend
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/transactions`, {
+        params,
       });
       setTransactions(response.data);
     } catch (error) {
@@ -28,17 +27,16 @@ const Penjualan = () => {
     }
   };
 
-  // Fungsi untuk mengambil data TOP SALE
   const fetchTopSales = async () => {
     try {
       const params = {};
       if (startDate && endDate) {
-        params.startDate = new Date(startDate).toISOString(); // Konversi ke format ISO
-        params.endDate = new Date(endDate).toISOString();     // Konversi ke format ISO
+        params.startDate = new Date(startDate).toISOString();
+        params.endDate = new Date(endDate).toISOString();
       }
 
-      const response = await axios.get("http://localhost:3000/api/top-sale", {
-        params, // Kirim query parameter ke backend
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/top-sale`, {
+        params,
       });
       setTopSales(response.data);
     } catch (error) {
@@ -46,13 +44,11 @@ const Penjualan = () => {
     }
   };
 
-  // Ambil data transaksi dan TOP SALE saat komponen di-mount atau filter berubah
   useEffect(() => {
     fetchTransactions();
     fetchTopSales();
-  }, [shift, startDate, endDate]); // Jalankan ulang saat shift, startDate, atau endDate berubah
+  }, [shift, startDate, endDate]);
 
-  // Hitung Grand Total dari total pembayaran
   const grandTotal = transactions.reduce((total, transaction) => {
     return total + (transaction.totalPembayaran || 0);
   }, 0);
@@ -64,7 +60,6 @@ const Penjualan = () => {
           <p className="mb-0">PENJUALAN</p>
         </div>
 
-        {/* Filter Shift dan Tanggal */}
         <Card className="mt-3">
           <Card.Body>
             <Card.Title>Filter Transaksi</Card.Title>
@@ -112,7 +107,6 @@ const Penjualan = () => {
           </Card.Body>
         </Card>
 
-        {/* Tampilkan TOP SALE */}
         <Card className="mt-3">
           <Card.Body>
             <Card.Title>TOP SALE</Card.Title>
@@ -137,7 +131,6 @@ const Penjualan = () => {
           </Card.Body>
         </Card>
 
-        {/* Tampilkan histori transaksi */}
         <Card className="mt-3">
           <Card.Body>
             <Card.Title>Histori Transaksi</Card.Title>
@@ -160,7 +153,7 @@ const Penjualan = () => {
                   <React.Fragment key={transaction._id}>
                     {transaction.produkDibeli.map((produk, idx) => (
                       <tr key={`${transaction._id}-${idx}`}>
-                        {idx === 0 && ( // Hanya tampilkan data transaksi sekali di baris pertama
+                        {idx === 0 && (
                           <>
                             <td rowSpan={transaction.produkDibeli.length}>{index + 1}</td>
                             <td rowSpan={transaction.produkDibeli.length}>{transaction.kodeTransaksi}</td>
@@ -176,9 +169,9 @@ const Penjualan = () => {
                             </td>
                           </>
                         )}
-                        <td>{produk.qty}</td> {/* Qty */}
-                        <td>Rp {produk.hargaJual?.toLocaleString("id-ID") || "0"}</td> {/* Total Harga */}
-                        <td>{produk.namaProduk}</td> {/* Detail Produk */}
+                        <td>{produk.qty}</td>
+                        <td>Rp {produk.hargaJual?.toLocaleString("id-ID") || "0"}</td>
+                        <td>{produk.namaProduk}</td>
                       </tr>
                     ))}
                   </React.Fragment>

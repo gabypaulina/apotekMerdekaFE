@@ -7,6 +7,9 @@ const Profit = () => {
   const [tahun, setTahun] = useState(""); // State untuk tahun
   const [profitData, setProfitData] = useState(null); // State untuk menyimpan hasil profit
 
+  // Get backend URL from environment variable
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   // Fungsi untuk menghitung profit bersih
   const calculateProfit = async () => {
     if (!bulan || !tahun) {
@@ -16,7 +19,7 @@ const Profit = () => {
   
     try {
       // Kirim request ke backend
-      const response = await axios.get("http://localhost:3000/api/profit-bersih", {
+      const response = await axios.get(`${BACKEND_URL}/api/profit-bersih`, {
         params: {
           bulan, // Kirim bulan sebagai angka (3)
           tahun, // Kirim tahun sebagai string ("2023")

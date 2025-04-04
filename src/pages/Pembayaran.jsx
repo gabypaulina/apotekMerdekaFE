@@ -39,7 +39,7 @@ const Pembayaran = () => {
   }, [location]);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/allProduct')
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/allProduct`)
       .then(response => {
         setProducts(response.data.products || []);
         setRacikans(response.data.racikans || []);
@@ -177,7 +177,7 @@ const Pembayaran = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:3000/api/saveTransaction', transactionData);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/saveTransaction`, transactionData);
       if (response.status === 201) {
         alert('Transaksi berhasil disimpan!');
         setCart([]);

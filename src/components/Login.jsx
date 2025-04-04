@@ -13,7 +13,7 @@ const Login = () => {
     e.preventDefault();
     try {
       console.log("Sending data to backend:", { fullName, password });
-      const response = await axios.post("http://localhost:3000/api/login", { fullName, password });
+      const response = await axios.post(import.meta.env.VITE_BACKEND_URL/api/login, { fullName, password });
       console.log("Response from backend:", response.data); // Log respons dari backend
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("role", response.data.role);

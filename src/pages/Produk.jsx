@@ -18,13 +18,16 @@ const Produk = () => {
   const [searchBatch, setSearchBatch] = useState(''); // State untuk pencarian no. batch
   const navigate = useNavigate();
 
+  // Get backend URL from environment variable
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   const moveToAdd = () => navigate('/produk/add');
   const moveToAddRacikan = () => navigate('/produk/addRacikan');
   const moveToAddPaketan = () => navigate('/produk/addPaketan');
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/products');
+      const response = await axios.get(`${BACKEND_URL}/api/products`);
       setProductApotek(response.data);
     } catch (err) {
       console.log('Error fetching products: ', err);
@@ -33,7 +36,7 @@ const Produk = () => {
 
   const fetchRacikans = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/racikans');
+      const response = await axios.get(`${BACKEND_URL}/api/racikans`);
       setRacikanApotek(response.data);
     } catch (err) {
       console.log('Error fetching racikans: ', err);
@@ -42,7 +45,7 @@ const Produk = () => {
 
   const fetchResepans = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/resepans');
+      const response = await axios.get(`${BACKEND_URL}/api/resepans`);
       setResepanApotek(response.data);
     } catch (err) {
       console.log('Error fetching resepans: ', err);

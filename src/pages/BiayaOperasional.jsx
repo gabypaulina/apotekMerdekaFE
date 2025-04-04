@@ -23,13 +23,13 @@ const BiayaOperasional = () => {
 
   // Fetch data from backend when the component loads
   useEffect(() => {
-    setInputValues({})
+    setInputValues({});
     fetchBiaya();
-  }, [selectedBulan, setSelectedTahun]);
+  }, [selectedBulan, selectedTahun]);
 
   const fetchBiaya = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/biaya", {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/biaya`, {
         params: {
           bulan: selectedBulan,
           tahun: selectedTahun,
@@ -52,21 +52,21 @@ const BiayaOperasional = () => {
       alert("Jumlah biaya harus berupa angka.");
       return;
     }
-  
+
     try {
-      const response = await axios.post("http://localhost:3000/api/biaya", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/biaya`, {
         kategori,
         jumlah: parseFloat(jumlah),
         bulan: selectedBulan,
         tahun: selectedTahun, // Kirim tahun yang dipilih
       });
-  
+
       const savedBiaya = response.data;
       const biayaId = savedBiaya._id;
-  
+
       console.log("Saved Biaya ID:", biayaId);
-  
-      await axios.put(`http://localhost:3000/api/biaya/lock/${biayaId}`);
+
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/biaya/lock/${biayaId}`);
       fetchBiaya();
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Terjadi kesalahan saat menyimpan biaya.";
@@ -80,24 +80,24 @@ const BiayaOperasional = () => {
       alert("Kategori dan jumlah biaya harus diisi.");
       return;
     }
-  
+
     try {
-      const response = await axios.post("http://localhost:3000/api/biaya", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/biaya`, {
         kategori: newKategori,
         jumlah: parseFloat(newJumlah),
         bulan: selectedBulan,
         tahun: selectedTahun,
         isCustom: true,
       });
-  
+
       // Lock biaya tambahan yang baru disimpan
       const savedBiaya = response.data;
       const biayaId = savedBiaya._id;
-      await axios.put(`http://localhost:3000/api/biaya/lock/${biayaId}`);
-  
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/biaya/lock/${biayaId}`);
+
       // Update state biayaList dengan biaya tambahan yang baru
       setBiayaList((prevBiayaList) => [...prevBiayaList, { ...savedBiaya, isLocked: true }]);
-  
+
       // Reset modal dan input
       setShowModal(false);
       setNewKategori("");
@@ -108,6 +108,7 @@ const BiayaOperasional = () => {
       alert(`Gagal menyimpan biaya tambahan: ${errorMessage}`);
     }
   };
+
   const handleTambahBiaya = () => {
     setShowModal(true);
   };
@@ -135,7 +136,7 @@ const BiayaOperasional = () => {
     const total = biayaList
       .filter((biaya) => biaya.bulan === selectedBulan && biaya.tahun === selectedTahun) // Filter biaya untuk bulan dan tahun yang dipilih
       .reduce((sum, biaya) => sum + biaya.jumlah, 0); // Jumlahkan semua biaya
-  
+
     return total;
   };
 

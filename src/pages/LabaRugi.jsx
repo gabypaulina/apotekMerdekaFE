@@ -17,7 +17,7 @@ const LabaRugi = () => {
       }
 
       // Kirim request ke backend
-      const response = await axios.get("http://localhost:3000/api/laba-rugi", {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/laba-rugi`, {
         params: {
           startDate: new Date(startDate).toISOString(), // Konversi ke format ISO
           endDate: new Date(endDate).toISOString(),     // Konversi ke format ISO

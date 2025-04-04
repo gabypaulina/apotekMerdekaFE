@@ -18,6 +18,9 @@ const EditResepan = () => {
   const [quantity, setQuantity] = useState(1);
   const [produkList, setProdukList] = useState([]);
 
+  // Using environment variable for backend URL
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     fetchProdukList();
     fetchResepanEdit();
@@ -25,7 +28,7 @@ const EditResepan = () => {
 
   const fetchProdukList = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/products");
+      const response = await axios.get(`${backendUrl}/api/products`);
       setProdukList(response.data);
     } catch (err) {
       console.error("Gagal mengambil daftar produk", err);
@@ -34,7 +37,7 @@ const EditResepan = () => {
 
   const fetchResepanEdit = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/resepans/${id}`);
+      const response = await axios.get(`${backendUrl}/api/resepans/${id}`);
       const resep = response.data;
       console.log("Data Resep dari backend: ", resep);
       console.log("Produk Resepan: ", resep.produkResepan);
@@ -69,7 +72,7 @@ const EditResepan = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.put(`http://localhost:3000/api/resepans/${id}`, {
+      const response = await axios.put(`${backendUrl}/api/resepans/${id}`, {
         produkResepan: produkResepan.map((item) => ({
           produk: item.produk._id, // Kirim ID produk
           quantity: item.quantity // Kirim jumlah pcs

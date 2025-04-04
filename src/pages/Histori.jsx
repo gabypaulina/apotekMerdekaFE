@@ -27,6 +27,9 @@ const Histori = () => {
   const [tempSearchTanggalKirim, setTempSearchTanggalKirim] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
 
+  // Define the backend URL from environment variable
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   // Ambil kode pembelian terakhir dari localStorage saat komponen di-mount
   useEffect(() => {
     const lastKode = localStorage.getItem("lastKodePembelian");
@@ -43,7 +46,7 @@ const Histori = () => {
   // Fungsi untuk mengambil data faktur dari backend
   const fetchFakturs = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/fakturs");
+      const response = await axios.get(`${BACKEND_URL}/api/fakturs`);
       setFakturs(response.data);
       setFilteredFakturs(response.data);
     } catch (err) {
@@ -192,7 +195,7 @@ const Histori = () => {
       console.log("Data yang dikirim ke backend:", data); // Debugging
   
       // Kirim data ke backend
-      const response = await axios.post("http://localhost:3000/api/fakturs", data);
+      const response = await axios.post(`${BACKEND_URL}/api/fakturs`, data);
   
       console.log("Faktur berhasil disimpan:", response.data);
   
@@ -264,7 +267,7 @@ const Histori = () => {
   // Fungsi untuk mengambil data supplier dari backend
   const fetchSuppliers = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/suppliers");
+      const response = await axios.get(`${BACKEND_URL}/api/suppliers`);
       setSuppliers(response.data);
     } catch (err) {
       console.log("Error fetching suppliers: ", err);
@@ -275,7 +278,7 @@ const Histori = () => {
   const handleAddSupplier = async () => {
     try {
       // Kirim data supplier ke backend
-      const response = await axios.post("http://localhost:3000/api/suppliers", {
+      const response = await axios.post(`${BACKEND_URL}/api/suppliers`, {
         nama: namaSupplier,
         noHp: noHpSupplier,
       });
