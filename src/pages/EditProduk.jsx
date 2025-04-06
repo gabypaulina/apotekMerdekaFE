@@ -24,7 +24,7 @@ const EditProduk = () => {
 
   const fetchProductEdit = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/products/${id}`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
       const product = response.data;
       setKodeProduk(product.kodeProduk);
       setNoBatch(product.noBatch);
@@ -60,7 +60,7 @@ const EditProduk = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.put(`http://localhost:3000/api/products/${id}`, {
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`, {
         kodeProduk,
         noBatch,
         namaProduk,

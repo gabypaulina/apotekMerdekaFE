@@ -18,7 +18,7 @@ const TambahRacikan = () => {
   useEffect(() => {
     const fetchProdukList = async () => {
       try{
-        const response = await axios.get("http://localhost:3000/api/products");
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
         setProdukList(response.data)
       }catch(err) {
         console.error("Gagal mengambil daftar produk", err)
@@ -49,7 +49,7 @@ const TambahRacikan = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/api/addRacikan", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/addRacikan`, {
         produkRacikan,
         kodeRacikan,
         namaRacikan,

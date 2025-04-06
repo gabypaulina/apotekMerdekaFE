@@ -29,7 +29,7 @@ const Retur = () => {
 
   const fetchRetur = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/retur");
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/retur`);
       setReturList(response.data);
     } catch (error) {
       console.error("Gagal mengambil data retur:", error);
@@ -38,7 +38,7 @@ const Retur = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/products");
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
       console.log("Data produk dari backend:", response.data); // Periksa data di console
 
       const now = new Date();
@@ -59,7 +59,7 @@ const Retur = () => {
 
   const fetchSuppliers = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/suppliers");
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers`);
       setSuppliers(response.data);
     } catch (error) {
       console.error("Gagal mengambil data supplier:", error);
@@ -68,7 +68,7 @@ const Retur = () => {
 
   const fetchFaktursBySupplier = async (kodeSupplier) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/faktur?kodeSupplier=${kodeSupplier}`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/faktur?kodeSupplier=${kodeSupplier}`);
       setFakturs(response.data);
     } catch (error) {
       console.error("Gagal mengambil data faktur:", error);
@@ -77,7 +77,7 @@ const Retur = () => {
 
   const generateNoRetur = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/retur/last");
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/retur/last`);
       const lastNoRetur = response.data.lastNoRetur || "RTR000";
       const nextNo = parseInt(lastNoRetur.replace("RTR", "")) + 1;
       const nextNoRetur = "RTR" + nextNo.toString().padStart(3, "0");
@@ -124,7 +124,7 @@ const Retur = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:3000/api/retur", formData);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/retur`, formData);
       console.log("Retur berhasil disimpan:", response.data);
 
       // Reset form dan tutup modal

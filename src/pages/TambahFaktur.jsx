@@ -24,7 +24,7 @@ const TambahFaktur = () => {
   // Fungsi untuk mengambil data supplier dari backend
   const fetchSuppliers = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/suppliers');
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers`);
       setSuppliers(response.data); // Simpan data supplier ke state
     } catch (err) {
       console.log('Error fetching suppliers: ', err);
@@ -34,7 +34,7 @@ const TambahFaktur = () => {
   // Fungsi untuk menambahkan faktur
   const handleSubmit = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/api/fakturs', {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/fakturs`, {
         kodePembelian: `KD-${Math.floor(Math.random() * 1000)}`, // Generate kode pembelian otomatis
         nomorFaktur,
         tanggalBeli,
@@ -63,7 +63,7 @@ const TambahFaktur = () => {
   // Fungsi untuk menambahkan supplier
   // const handleAddSupplier = async () => {
   //   try {
-  //     const response = await axios.post('http://localhost:3000/api/suppliers', {
+  //     const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers`, {
   //       nama: namaSupplier,
   //       noHp: noHpSupplier,
   //     });
@@ -81,7 +81,7 @@ const TambahFaktur = () => {
 
   const handleAddSupplier = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/api/suppliers', {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers`, {
         nama: namaSupplier, // Pastikan field ini sesuai
         noHp: noHpSupplier, // Pastikan field ini sesuai
       });

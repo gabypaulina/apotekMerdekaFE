@@ -12,7 +12,7 @@ const Utang = () => {
 
   const fetchUtang = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/utang");
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/utang`);
       setUtangList(response.data);
     } catch (error) {
       console.error("Gagal mengambil data utang:", error);
@@ -21,7 +21,7 @@ const Utang = () => {
 
   const handlePelunasan = async (kodePembelian) => {
     try {
-      const response = await axios.put(`http://localhost:3000/api/pembelian/lunasi/${kodePembelian}`);
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/pembelian/lunasi/${kodePembelian}`);
       console.log("Utang dilunasi:", response.data);
 
       // Update state secara lokal tanpa perlu fetch ulang

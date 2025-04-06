@@ -57,7 +57,7 @@ const TambahProduk = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/api/addProduct", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/addProduct`, {
         kodeProduk,
         noBatch,
         namaProduk,
