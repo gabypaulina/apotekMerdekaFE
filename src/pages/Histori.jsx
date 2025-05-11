@@ -33,14 +33,7 @@ const Histori = () => {
   // Ambil kode pembelian terakhir dari localStorage saat komponen di-mount
   useEffect(() => {
     const lastKode = localStorage.getItem("lastKodePembelian");
-    const lastDate = localStorage.getItem("lastKodeDate");
-    const today = new Date().toISOString().split("T")[0];
-
-    if (lastDate === today && lastKode) {
-      setKodePembelian(lastKode);
-    } else {
-      setKodePembelian("INV-001");
-    }
+    setKodePembelian(lastKode || "INV-001")
   }, []);
 
   // Fungsi untuk mengambil data faktur dari backend
@@ -130,21 +123,25 @@ const Histori = () => {
 
   // Fungsi untuk generate kode pembelian baru
   const generateKodePembelian = () => {
-    const today = new Date().toISOString().split("T")[0]; // Ambil tanggal hari ini
-    const lastKode = localStorage.getItem("lastKodePembelian");
-    const lastDate = localStorage.getItem("lastKodeDate");
+    // const today = new Date().toISOString().split("T")[0]; // Ambil tanggal hari ini
+    // const lastKode = localStorage.getItem("lastKodePembelian");
+    // const lastDate = localStorage.getItem("lastKodeDate");
   
-    if (lastDate === today && lastKode) {
-      // Jika tanggal sama, increment kode
-      const lastNumber = parseInt(lastKode.split("-")[1]) || 0; // Ambil angka dari kode terakhir
-      const newNumber = lastNumber + 1; // Tambah 1 dari kode terakhir
-      const newKode = `INV-${String(newNumber).padStart(3, "0")}`; // Format: INV-XXX
-      return newKode;
-    } else {
-      // Jika tanggal berbeda atau belum ada kode, mulai dari 1
-      const newKode = "INV-001"; // Format: INV-001
-      return newKode;
-    }
+    // if (lastDate === today && lastKode) {
+    //   // Jika tanggal sama, increment kode
+    //   const lastNumber = parseInt(lastKode.split("-")[1]) || 0; // Ambil angka dari kode terakhir
+    //   const newNumber = lastNumber + 1; // Tambah 1 dari kode terakhir
+    //   const newKode = `INV-${String(newNumber).padStart(3, "0")}`; // Format: INV-XXX
+    //   return newKode;
+    // } else {
+    //   // Jika tanggal berbeda atau belum ada kode, mulai dari 1
+    //   const newKode = "INV-001"; // Format: INV-001
+    //   return newKode;
+    // }
+    const lastKode = localStorage.getItem("lastKodePembelian") || "INV-001";
+    const lastNumber = parseInt(lastKode.split("-")[1]) || 0
+    const newNumber = lastNumber + 1;
+    return `INV-${String(newNumber).padStart(3,"0")}`
   };
 
   // Handle tombol Simpan
@@ -200,9 +197,7 @@ const Histori = () => {
       console.log("Faktur berhasil disimpan:", response.data);
   
       // Simpan kode pembelian terakhir ke localStorage
-      const today = new Date().toISOString().split("T")[0];
       localStorage.setItem("lastKodePembelian", newKodePlaceholder); // Simpan kode placeholder
-      localStorage.setItem("lastKodeDate", today);
   
       // Update kode pembelian di state
       setKodePembelian(newKodePlaceholder); // Tampilkan kode placeholder di input
@@ -243,10 +238,27 @@ const Histori = () => {
     newProduk[index] = { ...newProduk[index], [field]: value };
   
     // Hitung jumlah (harga * qty) untuk produk ini
-    if (field === "harga" || field === "qty") {
+    if (field === "harga" || field === "qty" || field === "disc1" || field === "disc2" || field === "disc3" || field === "ppn") {
       const harga = newProduk[index].harga || 0;
       const qty = newProduk[index].qty || 0;
-      newProduk[index].jumlah = harga * qty;
+      const disc1 = newProduk[index].disc1 || 0;
+      const disc2 = newProduk[index].disc2 || 0;
+      const disc3 = newProduk[index].disc3 || 0;
+      const ppn = newProduk[index].ppn || 0;
+
+      // Hitung subtotal sebelum diskon
+      const subtotal = harga * qty;
+
+      // Hitung diskon bertingkat
+      const afterDisc1 = subtotal - (subtotal * disc1 / 100);
+      const afterDisc2 = afterDisc1 - (afterDisc1 * disc2 / 100);
+      const afterDisc3 = afterDisc2 - (afterDisc2 * disc3 / 100);
+
+      // Hitung PPN
+      const totalAfterPPN = afterDisc3 + (afterDisc3 * ppn / 100);
+
+
+      newProduk[index].jumlah = totalAfterPPN;
     }
   
     setProduk(newProduk);
@@ -254,7 +266,7 @@ const Histori = () => {
 
   // Hitung total pembelian dan hutang
   useEffect(() => {
-    const total = produk.reduce((sum, item) => sum + (item.harga || 0) * (item.qty || 0), 0);
+    const total = produk.reduce((sum, item) => sum + (item.jumlah || 0), 0);
     setTotalPembelian(total);
     setHutang(total - uangMuka);
   }, [produk, uangMuka]);
@@ -585,7 +597,7 @@ const Histori = () => {
                   onChange={(e) => handleProdukChange(index, "ppn", parseFloat(e.target.value))}
                 />
               </td>
-              <td>{(item.harga || 0) * (item.qty || 0)}</td>
+              <td></td>
             </tr>
           ))}
         </tbody>
@@ -601,14 +613,15 @@ const Histori = () => {
         </Col>
         <Col md={3}>
           <Form.Group>
-          <Form.Control
-  type="text"
-  value={formatCurrency(uangMuka)}
-  onChange={(e) => {
-    const parsedValue = parseCurrency(e.target.value);
-    setUangMuka(parsedValue);
-  }}
-/>
+            <Form.Label>Uang Muka</Form.Label>
+            <Form.Control
+              type="text"
+              value={formatCurrency(uangMuka)}
+              onChange={(e) => {
+                const parsedValue = parseCurrency(e.target.value);
+                setUangMuka(parsedValue);
+              }}
+            />
           </Form.Group>
         </Col>
         <Col md={3}>

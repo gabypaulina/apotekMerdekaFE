@@ -15,7 +15,6 @@ const EditProduk = () => {
   const [notifStok, setNotifStok] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
   const [margin, setMargin] = useState(0); // State untuk margin
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,10 +25,13 @@ const EditProduk = () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
       const product = response.data;
+
+      const expDate = product.exp ? new Date(product.exp).toISOString().split('T')[0] : '';
+
       setKodeProduk(product.kodeProduk);
       setNoBatch(product.noBatch);
       setNamaProduk(product.namaProduk);
-      setExp(product.exp);
+      setExp(expDate);
       setHpp(product.hpp);
       setHargaJual(product.hargaJual);
       setStok(product.stok);
@@ -60,11 +62,12 @@ const EditProduk = () => {
     e.preventDefault();
 
     try {
+      const expDate = exp ? new Date(exp).toISOString() : null
       const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`, {
         kodeProduk,
         noBatch,
         namaProduk,
-        exp,
+        exp: expDate,
         hpp,
         hargaJual,
         stok,

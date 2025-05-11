@@ -5,7 +5,6 @@ import axios from "axios"; // Import axios untuk fetching data
 
 // ASSET
 import daftarProduk from '../assets/daftarProduk.png';
-import jurnal from '../assets/jurnal.png';
 import histori from '../assets/histori2.png';
 import pembayaran from '../assets/pembayaran.png';
 import penjualan from '../assets/penjualan2.png';
@@ -27,9 +26,11 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        // const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
+        console.log('API Response', response.data)
         setProducts(response.data);
-        checkNotifications(response.data); // Cek notifikasi setelah data diambil
+        checkNotifications(response.data);         
       } catch (err) {
         console.error("Gagal mengambil data produk: ", err);
       }
@@ -63,6 +64,7 @@ const Home = () => {
     setStockAlert(stockMessage);
     setExpAlert(expMessage);
   };
+  
 
   return (
     <div className="content">

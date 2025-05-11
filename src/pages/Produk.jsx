@@ -4,7 +4,8 @@ import axios from 'axios';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Container, Form, Card, Row, Col } from "react-bootstrap";
+import { Container, Form, Card, Row, Col, Button } from "react-bootstrap";
+import * as XLSX from 'xlsx';
 
 // ASSET
 import search from '../assets/search.png';
@@ -16,10 +17,38 @@ const Produk = () => {
   const [searchKode, setSearchKode] = useState(''); // State untuk pencarian kode
   const [searchNama, setSearchNama] = useState(''); // State untuk pencarian nama
   const [searchBatch, setSearchBatch] = useState(''); // State untuk pencarian no. batch
+  const [searchDeskripsi, setSearchDeskripsi] = useState(''); // State untuk pencarian deskripsi
+  const [totalProduk, setTotalProduk] = useState(0);
+  const [totalFilteredProduk, setTotalFilteredProduk] = useState(0);
+  const [sortMethod, setSortMethod] = useState('newest')
+  
+
   const navigate = useNavigate();
 
-  // Get backend URL from environment variable
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  const exportToExcel = () => {
+    // Filter hanya produk biasa (bukan racikan/resep)
+    const productsToExport = productsApotek.map(product => ({
+      'Kode Produk': product.kodeProduk,
+      'No. Batch': product.noBatch,
+      'Nama Produk': product.namaProduk,
+      'EXP Date': formatTanggal(product.exp),
+      'HPP': product.hpp,
+      'Harga Jual': product.hargaJual,
+      'Stok': product.stok,
+      'Notif Stok': product.notifStok,
+      'Deskripsi': product.deskripsi || ''
+    }));
+
+    // Buat worksheet
+    const ws = XLSX.utils.json_to_sheet(productsToExport);
+    
+    // Buat workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Daftar Produk");
+    
+    // Export ke file Excel
+    XLSX.writeFile(wb, "daftar_produk.xlsx");
+  };
 
   const moveToAdd = () => navigate('/produk/add');
   const moveToAddRacikan = () => navigate('/produk/addRacikan');
@@ -27,8 +56,9 @@ const Produk = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/products`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
       setProductApotek(response.data);
+      setTotalProduk(response.data.length)
     } catch (err) {
       console.log('Error fetching products: ', err);
     }
@@ -36,7 +66,7 @@ const Produk = () => {
 
   const fetchRacikans = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/racikans`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/racikans`);
       setRacikanApotek(response.data);
     } catch (err) {
       console.log('Error fetching racikans: ', err);
@@ -45,7 +75,7 @@ const Produk = () => {
 
   const fetchResepans = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/resepans`);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/resepans`);
       setResepanApotek(response.data);
     } catch (err) {
       console.log('Error fetching resepans: ', err);
@@ -67,8 +97,14 @@ const Produk = () => {
     const matchKode = product.kodeProduk.toLowerCase().includes(searchKode.toLowerCase());
     const matchNama = product.namaProduk.toLowerCase().includes(searchNama.toLowerCase());
     const matchBatch = product.noBatch.toLowerCase().includes(searchBatch.toLowerCase());
-    return matchKode && matchNama && matchBatch;
+    const matchDeskripsi = product.deskripsi?.toLowerCase().includes(searchDeskripsi.toLowerCase());
+    const result = matchKode && matchNama && matchBatch && matchDeskripsi;
+    return result
   });
+
+  useEffect(() => {
+    setTotalFilteredProduk(filteredProducts.length)
+  }, [filteredProducts])
 
   const filteredRacikans = racikanApotek.filter((racikan) => {
     const matchKode = racikan.kodeRacikan.toLowerCase().includes(searchKode.toLowerCase());
@@ -81,6 +117,14 @@ const Produk = () => {
     const matchNama = resepan.namaResep.toLowerCase().includes(searchNama.toLowerCase());
     return matchKode && matchNama;
   });
+
+  const filteredAndSortedProducts = filteredProducts.sort((a,b) => {
+    if (sortMethod === 'a-z') {
+      return a.namaProduk.localeCompare(b.namaProduk)
+    }else {
+      return b._id.localeCompare(a._id)
+    }
+  })
 
   const settings = {
     slidesToShow: 4,
@@ -132,12 +176,19 @@ const Produk = () => {
             <button className="addProduct" onClick={moveToAdd}><strong>TAMBAH PRODUK</strong></button>
             <button className="addProduct ms-3 me-3" onClick={moveToAddRacikan}><strong>TAMBAH RACIKAN</strong></button>
             <button className="addProduct" onClick={moveToAddPaketan}><strong>TAMBAH PAKET RESEPAN</strong></button>
+            <Button 
+              variant="success" 
+              className="ms-3"
+              onClick={exportToExcel}
+            >
+              Export to Excel
+            </Button>
           </div>
         </div>
 
         {/* Search Engine */}
         <div className="searchEnginee row mt-4">
-          <div className="col-4">
+          <div className="col-3">
             <Form className="d-flex align-items-center">
               <Form.Control
                 type="search"
@@ -150,7 +201,7 @@ const Produk = () => {
               <img src={search} alt="" />
             </Form>
           </div>
-          <div className="col-4">
+          <div className="col-3">
             <Form className="d-flex">
               <Form.Control
                 type="search"
@@ -163,7 +214,7 @@ const Produk = () => {
               <img src={search} alt="" />
             </Form>
           </div>
-          <div className="col-4">
+          <div className="col-3">
             <Form className="d-flex">
               <Form.Control
                 type="search"
@@ -176,15 +227,45 @@ const Produk = () => {
               <img src={search} alt="" />
             </Form>
           </div>
+          <div className="col-3">
+            <Form className="d-flex">
+              <Form.Control
+                type="search"
+                placeholder="Deskripsi Produk"
+                className="me-2"
+                aria-label="Search"
+                value={searchDeskripsi}
+                onChange={(e) => setSearchDeskripsi(e.target.value)}
+              />
+              <img src={search} alt="" />
+            </Form>
+          </div>
         </div>
 
         {/* PRODUK PABRIK */}
         <p className='mt-5 text-center' style={{ fontSize: '30px' }}>PRODUK</p>
+
+        <div className="d-flex justify-content-between mt-3 mb-3">
+          <strong>Total Produk : {totalProduk}</strong>
+          <strong>Tampil : {totalFilteredProduk}</strong>
+          <div className="sort-filter">
+            <Form.Select 
+              size="sm" 
+              style={{ width: '180px' }}
+              value={sortMethod}
+              onChange={(e) => setSortMethod(e.target.value)}
+            >
+              <option value="newest">Terbaru</option>
+              <option value="a-z">A-Z</option>
+            </Form.Select>
+          </div>
+        </div>
+
         {filteredProducts.length === 0 ? (
           <p>No products</p>
         ) : (
           <Slider {...settings}>
-            {filteredProducts.map((product) => (
+            {filteredAndSortedProducts.map((product) => (
               <div key={product._id}>
                 <Card style={{ width: '20rem', marginTop: '40px' }}>
                   <Card.Body>
